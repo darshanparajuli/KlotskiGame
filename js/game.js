@@ -4,6 +4,10 @@ var grid;
 
 var dir; // 0, 1, 2, 3; 0: East; Counter-Clockwise
 
+var mxBefore, mxAfter, myBefore, myAfter;
+
+var currPiece;
+
 var config = (function () {
     var CELL_SIZE = 50;
     var ROWS = 5 + 4;
@@ -133,6 +137,35 @@ function setValueGrid(startRow, startCol, w, h, val) {
     }
 }
 
+$(document).mousedown(function (evt) {
+    mxBefore = evt.clientX;
+    myBefore = evt.clientY;
+});
+
+$(document).mouseup(function (evt) {
+    mxAfter = evt.clientX;
+    myAfter = evt.clientY;
+
+    var deltaX = mxAfter - mxBefore;
+    var deltaY = myAfter - myBefore;
+
+    var theta = Math.atan2(deltaX, deltaY) * 180 / Math.PI;
+
+    if (theta > 45 && theta < 135) {
+        dir = 0;
+    } else if ((theta > 135 && theta < 180) || (theta < -135 && theta > -180)) {
+        dir = 1;
+    } else if (theta > -135 && theta < -45) {
+        dir = 2;
+    } else {
+        dir = 3;
+    }
+
+    if (currPiece != null) {
+        currPiece.move(dir);
+    }
+});
+
 function Piece(id, x, y, w, h, c) {
     this.id = id;
     this.x = x;
@@ -142,43 +175,46 @@ function Piece(id, x, y, w, h, c) {
     var _this = this;
     this.rect = paper.rect((x * config.get("CELL_SIZE")) + config.get("OFFSET"), (y * config.get("CELL_SIZE")) + config.get("OFFSET"),
             w - config.get("OFFSET"), h - config.get("OFFSET"))
-        .click(function (evt) {
-
-
-            var dim = getUnitWidthHeight(_this);
-
-            switch (dir) {
-                case 0:
-                    if (grid[_this.y][_this.x + dim.w] == config.get("VALID")) {
-                        setValueGrid(_this.y, _this.x, dim.h, dim.w, config.get("VALID"));
-                        _this.moveTo(_this.x + dim.w, _this.y);
-                    } else {
-                        if (grid[_this.y][_this.x - dim.w] == config.get("VALID")) {
-                            setValueGrid(_this.y, _this.x, dim.h, dim.w, config.get("VALID"));
-                            _this.moveTo(_this.x - dim.w, _this.y);
-                        }
-                        dir = 1;
-                    }
-                    break;
-                case 1:
-                    if (grid[_this.y][_this.x - dim.w] == config.get("VALID")) {
-                        setValueGrid(_this.y, _this.x, dim.h, dim.w, config.get("VALID"));
-                        _this.moveTo(_this.x - dim.w, _this.y);
-                    } else {
-                        if (grid[_this.y][_this.x + dim.w] == config.get("VALID")) {
-                            setValueGrid(_this.y, _this.x, dim.h, dim.w, config.get("VALID"));
-                            _this.moveTo(_this.x + dim.w, _this.y);
-                        }
-                        dir = 0;
-                    }
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-            }
+        .mousedown(function (evt) {
+            currPiece = _this;
         })
         .attr({fill: c, stroke: "black", "stroke-width": 3});
+}
+
+Piece.prototype.move = function (dir) {
+    var dim = getUnitWidthHeight(this);
+
+    var canMove = function () {
+
+    }
+
+
+    switch (dir) {
+        case 0:
+            if (grid[this.y][this.x + dim.w] == config.get("VALID")) {
+                setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+                this.moveTo(this.x + dim.w, this.y);
+            }
+            break;
+        case 1:
+            if (grid[this.y - dim.h][this.x] == config.get("VALID")) {
+                setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+                this.moveTo(this.x, this.y - dim.h);
+            }
+            break;
+        case 2:
+            if (grid[this.y][this.x - dim.w] == config.get("VALID")) {
+                setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+                this.moveTo(this.x - dim.w, this.y);
+            }
+            break;
+        case 3:
+            if (grid[this.y + dim.h][this.x] == config.get("VALID")) {
+                setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+                this.moveTo(this.x, this.y + dim.h);
+            }
+            break;
+    }
 }
 
 Piece.prototype.moveTo = function (x, y) {
