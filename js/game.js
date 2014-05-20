@@ -4,14 +4,13 @@ var grid;
 
 var dir; // 0, 1, 2, 3; 0: East; Counter-Clockwise
 
-var ANIM_SPEED = 100;
-
 var config = (function () {
     var CELL_SIZE = 50;
     var ROWS = 5 + 4;
     var COLS = 4;
 
     var constants = {
+        "ANIM_SPEED": 100,
         "VALID": 0,
         "WIN": 2,
         "INVALID": 1,
@@ -187,7 +186,7 @@ Piece.prototype.moveTo = function (x, y) {
     this.y = y;
     var _this = this;
     this.rect.animate({x: (x * config.get("CELL_SIZE")) + config.get("OFFSET"),
-            y: (y * config.get("CELL_SIZE")) + config.get("OFFSET")}, ANIM_SPEED, "ease-in-out",
+            y: (y * config.get("CELL_SIZE")) + config.get("OFFSET")}, config.get("ANIM_SPEED"), "ease-in-out",
         function () {
             _this.x = Math.floor(this.attr('x') / config.get("CELL_SIZE"));
             _this.y = Math.floor(this.attr('y') / config.get("CELL_SIZE"));
