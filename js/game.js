@@ -14,7 +14,7 @@ var config = (function () {
     var COLS = 4;
 
     var constants = {
-        "ANIM_SPEED": 100,
+        "ANIM_SPEED": 300,
         "VALID": 0,
         "WIN": 2,
         "INVALID": 1,
@@ -134,6 +134,17 @@ function setValueGrid(startRow, startCol, w, h, val) {
         for (var j = startCol; j < startCol + w; j++) {
             grid[i][j] = val;
         }
+    }
+}
+
+function printGrid() {
+    for (var i = 0; i < config.get("ROWS"); i++) {
+        var temp = "|";
+        for (var j = 0; j < config.get("COLS"); j++) {
+            temp += grid[i][j] + "|";
+        }
+
+        console.log(temp);
     }
 }
 
