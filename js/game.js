@@ -149,6 +149,8 @@ function printGrid() {
 }
 
 $(document).mousedown(function (evt) {
+    evt.preventDefault();
+
     mxBefore = evt.clientX;
     myBefore = evt.clientY;
 });
@@ -159,7 +161,6 @@ $(document).mouseup(function (evt) {
 
     var deltaX = mxAfter - mxBefore;
     var deltaY = myAfter - myBefore;
-
     var theta = Math.atan2(deltaX, deltaY) * 180 / Math.PI;
 
     if (theta > 45 && theta < 135) {
@@ -174,7 +175,9 @@ $(document).mouseup(function (evt) {
 
     if (currPiece != null) {
         currPiece.move(dir);
+        currPiece = null;
     }
+
 });
 
 function Piece(id, x, y, w, h, c) {
@@ -196,33 +199,33 @@ Piece.prototype.move = function (dir) {
     var dim = getUnitWidthHeight(this);
 
     var canMove = function () {
-
+        
     }
 
 
     switch (dir) {
         case 0:
-            if (grid[this.y][this.x + dim.w] == config.get("VALID")) {
+            if (grid[this.y][this.x + 1] == config.get("VALID")) {
                 setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
-                this.moveTo(this.x + dim.w, this.y);
+                this.moveTo(this.x + 1, this.y);
             }
             break;
         case 1:
-            if (grid[this.y - dim.h][this.x] == config.get("VALID")) {
+            if (grid[this.y - 1][this.x] == config.get("VALID")) {
                 setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
-                this.moveTo(this.x, this.y - dim.h);
+                this.moveTo(this.x, this.y - 1);
             }
             break;
         case 2:
-            if (grid[this.y][this.x - dim.w] == config.get("VALID")) {
+            if (grid[this.y][this.x - 1] == config.get("VALID")) {
                 setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
-                this.moveTo(this.x - dim.w, this.y);
+                this.moveTo(this.x - 1, this.y);
             }
             break;
         case 3:
-            if (grid[this.y + dim.h][this.x] == config.get("VALID")) {
+            if (grid[this.y + 1][this.x] == config.get("VALID")) {
                 setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
-                this.moveTo(this.x, this.y + dim.h);
+                this.moveTo(this.x, this.y + 1);
             }
             break;
     }
