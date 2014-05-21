@@ -291,11 +291,9 @@ Piece.prototype.canMove = function (dir, dist) {
         return false;
     }
 
-
     if (r + _r > 4 || r + _r < 0 || c + _c > 3 || c + _c < 0) {
         return false;
     }
-
 
     for (var i = r; i < r + r_count; i++) {
         for (var j = c; j < c + c_count; j++) {
