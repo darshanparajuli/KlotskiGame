@@ -89,21 +89,21 @@ function initPieces() {
         "big_s": new Piece("big_s", 1, 0, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], "red"),
         "small_s": {
             0: new Piece("small_s", 0, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "green"),
-            1: new Piece("small_s", 1, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "blue"),
-            2: new Piece("small_s", 2, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "brown"),
-            3: new Piece("small_s", 3, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "darkred")
+            1: new Piece("small_s", 1, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "green"),
+            2: new Piece("small_s", 2, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "green"),
+            3: new Piece("small_s", 3, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "green")
         },
         "tall": {
-            0: new Piece("tall", 0, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "red"),
-            1: new Piece("tall", 0, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "red"),
-            2: new Piece("tall", 3, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "red"),
-            3: new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "red")
+            0: new Piece("tall", 0, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "orange"),
+            1: new Piece("tall", 0, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "orange"),
+            2: new Piece("tall", 3, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "orange"),
+            3: new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "orange")
         },
-        "wide": new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], "red"),
-        "empty": {
-            0: new Piece("empty", 4, 1, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "red"),
-            1: new Piece("empty", 4, 2, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "red")
-        }
+        "wide": new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], "blue")
+//        "empty": {
+//            0: new Piece("empty", 1, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "black"),
+//            1: new Piece("empty", 2, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "black")
+//        }
     };
 }
 
@@ -215,6 +215,9 @@ Piece.prototype.getUnitWidthHeight = function () {
 }
 
 Piece.prototype.canMove = function (dir) {
+    if (this.id != "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE"))
+        return false;
+
     var r = this.y;
     var c = this.x;
 
@@ -225,9 +228,6 @@ Piece.prototype.canMove = function (dir) {
 
     var dim = this.getUnitWidthHeight();
 
-    if (this.id != "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE"))
-        return false;
-
     switch (dir) {
         case "E":
             r_count = dim.h;
@@ -235,12 +235,8 @@ Piece.prototype.canMove = function (dir) {
             _c = dim.w;
             break;
         case "NE":
-            if (grid[r - 1][c + 1] == config.get("VALID")) {
-                if (grid[r - 1][c] == config.get("VALID") || grid[r][c + 1] == config.get("VALID"))
-                    return true;
-            }
-
-            return false;
+            _r = -1;
+            _c = 1;
             break;
         case "N":
             r_count++;
@@ -248,12 +244,8 @@ Piece.prototype.canMove = function (dir) {
             _r--;
             break;
         case "NW":
-            if (grid[r - 1][c - 1] == config.get("VALID")) {
-                if (grid[r - 1][c] == config.get("VALID") || grid[r][c - 1] == config.get("VALID"))
-                    return true;
-            }
-
-            return false;
+            _r = -1;
+            _c = -1;
             break;
         case "W":
             r_count = dim.h;
@@ -261,12 +253,8 @@ Piece.prototype.canMove = function (dir) {
             _c--;
             break;
         case "SW":
-            if (grid[r + 1][c - 1] == config.get("VALID")) {
-                if (grid[r + 1][c] == config.get("VALID") || grid[r][c - 1] == config.get("VALID"))
-                    return true;
-            }
-
-            return false;
+            _r = 1;
+            _c = -1;
             break;
         case "S":
             r_count++;
@@ -274,12 +262,17 @@ Piece.prototype.canMove = function (dir) {
             _r = dim.h;
             break;
         case "SE":
-            if (grid[r + 1][c + 1] == config.get("VALID")) {
-                if (grid[r + 1][c] == config.get("VALID") || grid[r][c + 1] == config.get("VALID"))
-                    return true;
-            }
+            _r = 1;
+            _c = 1;
+            break;
+    }
 
-            return false;
+    if (this.id == "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE")) {
+        if (grid[r + _r][c + _c] == config.get("VALID")) {
+            if (grid[r + _r][c] == config.get("VALID") || grid[r][c + _c] == config.get("VALID"))
+                return true;
+        }
+        return false;
     }
 
     for (var i = r; i < r + r_count; i++) {
