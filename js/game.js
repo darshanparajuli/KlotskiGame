@@ -170,7 +170,7 @@ $(document).mouseup(function (evt) {
             dist = 0;
         }
 
-        if (currPiece != null) {
+        if (currPiece != null && currPiece.animating == false) {
             if (currPiece.canMove(dir, dist))
                 currPiece.move(dir, dist);
             else if (dist > 0 && currPiece.canMove(dir, dist - 1))
@@ -187,6 +187,8 @@ function Piece(id, x, y, w, h, c) {
     this.y = y;
     this.width = w;
     this.height = h;
+    this.animating;
+    this.animating = false;
     var _this = this;
     this.rect = paper.rect((x * config.get("CELL_SIZE")) + config.get("OFFSET"), (y * config.get("CELL_SIZE")) + config.get("OFFSET"),
             w - config.get("OFFSET") * 2, h - config.get("OFFSET") * 2)
@@ -348,16 +350,23 @@ Piece.prototype.move = function (dir, dist) {
 }
 
 Piece.prototype.moveTo = function (x, y) {
+    this.animating = true;
     this.x = x;
     this.y = y;
     var _this = this;
+
+    var currColor = this.rect.attr("fill");
+
     this.rect.animate({x: (x * config.get("CELL_SIZE")) + config.get("OFFSET"),
-            y: (y * config.get("CELL_SIZE")) + config.get("OFFSET")}, 300, "<>",
+            y: (y * config.get("CELL_SIZE")) + config.get("OFFSET"), fill: "yellow"}, 300, "<>",
         function () {
             _this.x = Math.floor(this.attr('x') / config.get("CELL_SIZE"));
             _this.y = Math.floor(this.attr('y') / config.get("CELL_SIZE"));
             var dim = _this.getUnitWidthHeight();
             setValueGrid(_this.y, _this.x, dim.w, dim.h, config.get("INVALID"));
+            _this.rect.animate({fill: currColor}, 300, "<>", function () {
+                _this.animating = false;
+            });
 
             total_moves++;
 
