@@ -106,10 +106,6 @@ function initPieces() {
             3: new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c)
         },
         "wide": new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c)
-//        "empty": {
-//            0: new Piece("empty", 1, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "black"),
-//            1: new Piece("empty", 2, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "black")
-//        }
     };
 }
 
