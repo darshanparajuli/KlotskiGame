@@ -41,6 +41,7 @@ $(function () {
 
 function init() {
     paper = Raphael("klotski", config.get("WIDTH"), config.get("HEIGHT"));
+    paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(50, 50, 50)"});
     initGrid();
     initPieces();
 }
@@ -85,21 +86,26 @@ function initGrid() {
 }
 
 function initPieces() {
+    var big_s_c = "rgb(200, 10, 10)";
+    var wide_c = "rgb(0, 50, 200)";
+    var small_s_c = "rgb(0, 150, 60)";
+    var tall_c = "rgb(20, 120, 120)";
+
     pieces = {
-        "big_s": new Piece("big_s", 1, 0, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], "red"),
+        "big_s": new Piece("big_s", 1, 0, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], big_s_c),
         "small_s": {
-            0: new Piece("small_s", 0, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "green"),
-            1: new Piece("small_s", 1, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "green"),
-            2: new Piece("small_s", 2, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "green"),
-            3: new Piece("small_s", 3, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "green")
+            0: new Piece("small_s", 0, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c),
+            1: new Piece("small_s", 1, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c),
+            2: new Piece("small_s", 2, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c),
+            3: new Piece("small_s", 3, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c)
         },
         "tall": {
-            0: new Piece("tall", 0, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "orange"),
-            1: new Piece("tall", 0, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "orange"),
-            2: new Piece("tall", 3, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "orange"),
-            3: new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "orange")
+            0: new Piece("tall", 0, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c),
+            1: new Piece("tall", 0, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c),
+            2: new Piece("tall", 3, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c),
+            3: new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c)
         },
-        "wide": new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], "blue")
+        "wide": new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c)
 //        "empty": {
 //            0: new Piece("empty", 1, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "black"),
 //            1: new Piece("empty", 2, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "black")
@@ -292,32 +298,39 @@ Piece.prototype.move = function (dir) {
 
     setValueGrid(this.y, this.x, dim.w, dim.h, config.get("VALID"));
 
+    var _x = 0;
+    var _y = 0;
+
     switch (dir) {
         case "E":
-            this.moveTo(this.x + 1, this.y);
+            _x = 1;
             break;
         case "NE":
-            this.moveTo(this.x + 1, this.y - 1);
+            _x = 1;
+            _y = -1
             break;
         case "N":
-            this.moveTo(this.x, this.y - 1);
+            _y = -1;
             break;
         case "NW":
-            this.moveTo(this.x - 1, this.y - 1);
+            _x = _y = -1;
             break;
         case "W":
-            this.moveTo(this.x - 1, this.y);
+            _x = -1;
             break;
         case "SW":
-            this.moveTo(this.x - 1, this.y + 1);
+            _x = -1;
+            _y = 1;
             break;
         case "S":
-            this.moveTo(this.x, this.y + 1);
+            _y = 1;
             break;
         case "SE":
-            this.moveTo(this.x + 1, this.y + 1);
+            _x = _y = 1;
             break;
     }
+
+    this.moveTo(this.x + _x, this.y + _y);
 }
 
 Piece.prototype.moveTo = function (x, y) {
