@@ -20,7 +20,7 @@ var config = (function () {
         "INVALID": 1,
         "ROWS": ROWS,
         "COLS": COLS,
-        "OFFSET": 5,
+        "OFFSET": 1,
         "CELL_SIZE": CELL_SIZE,
         "WIDTH": CELL_SIZE * 4,
         "HEIGHT": CELL_SIZE * 5,
@@ -41,7 +41,7 @@ $(function () {
 });
 
 function init() {
-    paper = Raphael("klotski", config.get("WIDTH") + config.get("OFFSET"), config.get("HEIGHT") + config.get("OFFSET"));
+    paper = Raphael("klotski", config.get("WIDTH"), config.get("HEIGHT"));
     initGrid();
     initPieces();
 }
@@ -163,20 +163,27 @@ $(document).mouseup(function (evt) {
     var deltaY = myAfter - myBefore;
     var theta = Math.atan2(deltaX, deltaY) * 180 / Math.PI;
 
-    if (theta > 45 && theta < 135) {
-        dir = 0;
-    } else if ((theta > 135 && theta < 180) || (theta < -135 && theta > -180)) {
-        dir = 1;
-    } else if (theta > -135 && theta < -45) {
-        dir = 2;
-    } else {
-        dir = 3;
+    if (deltaX != 0 && deltaY != 0) {
+        if (theta > 45 && theta < 135) {
+            dir = 0;
+        } else if ((theta > 135 && theta <= 180) || (theta < -135 && theta >= -180)) {
+            dir = 1;
+        } else if (theta > -135 && theta < -45) {
+            dir = 2;
+        } else if ((theta > -45 && theta <= 0) || (theta >= 0 && theta <= 45)) {
+            dir = 3;
+        }
+
+        if (currPiece != null) {
+            currPiece.canMove(dir);
+            currPiece.move(dir);
+            currPiece = null;
+        }
+
+        console.log("test");
     }
 
-    if (currPiece != null) {
-        currPiece.move(dir);
-        currPiece = null;
-    }
+    console.log("theta: " + theta + "dir: " + dir);
 
 });
 
@@ -188,45 +195,45 @@ function Piece(id, x, y, w, h, c) {
     this.height = h;
     var _this = this;
     this.rect = paper.rect((x * config.get("CELL_SIZE")) + config.get("OFFSET"), (y * config.get("CELL_SIZE")) + config.get("OFFSET"),
-            w - config.get("OFFSET"), h - config.get("OFFSET"))
+            w - config.get("OFFSET") * 2, h - config.get("OFFSET") * 2)
         .mousedown(function (evt) {
             currPiece = _this;
         })
-        .attr({fill: c, stroke: "black", "stroke-width": 3});
+        .hover(function () {
+            this.animate({stroke: "white"}, 500, "<>");
+        }, function () {
+            this.animate({stroke: "black"}, 500, "<>");
+        })
+        .attr({fill: c, stroke: "black", "stroke-width": 2});
+}
+
+Piece.prototype.canMove = function (dir) {
+
 }
 
 Piece.prototype.move = function (dir) {
     var dim = getUnitWidthHeight(this);
 
     var canMove = function () {
-        
-    }
 
+    }
 
     switch (dir) {
         case 0:
-            if (grid[this.y][this.x + 1] == config.get("VALID")) {
-                setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
-                this.moveTo(this.x + 1, this.y);
-            }
+            setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+            this.moveTo(this.x + 1, this.y);
             break;
         case 1:
-            if (grid[this.y - 1][this.x] == config.get("VALID")) {
-                setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
-                this.moveTo(this.x, this.y - 1);
-            }
+            setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+            this.moveTo(this.x, this.y - 1);
             break;
         case 2:
-            if (grid[this.y][this.x - 1] == config.get("VALID")) {
-                setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
-                this.moveTo(this.x - 1, this.y);
-            }
+            setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+            this.moveTo(this.x - 1, this.y);
             break;
         case 3:
-            if (grid[this.y + 1][this.x] == config.get("VALID")) {
-                setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
-                this.moveTo(this.x, this.y + 1);
-            }
+            setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+            this.moveTo(this.x, this.y + 1);
             break;
     }
 }
