@@ -173,7 +173,7 @@ $(document).mouseup(function (evt) {
         if (currPiece != null) {
             if (currPiece.canMove(dir, dist))
                 currPiece.move(dir, dist);
-            else if (dist > 1 && currPiece.canMove(dir, dist - 1))
+            else if (dist > 0 && currPiece.canMove(dir, dist - 1))
                 currPiece.move(dir, dist - 1);
 
             currPiece = null;
