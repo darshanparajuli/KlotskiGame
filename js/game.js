@@ -4,6 +4,8 @@ var grid;
 
 var dir;
 
+var total_moves = 0;
+
 var mxBefore, mxAfter, myBefore, myAfter;
 
 var currPiece;
@@ -160,9 +162,19 @@ $(document).mouseup(function (evt) {
         else if (theta > 30 && theta < 60)
             dir = "SE";
 
+        var dist;
+
+        if (Math.abs(deltaX) > 150 || Math.abs(deltaY) > 150) {
+            dist = 1;
+        } else {
+            dist = 0;
+        }
+
         if (currPiece != null) {
-            if (currPiece.canMove(dir))
-                currPiece.move(dir);
+            if (currPiece.canMove(dir, dist))
+                currPiece.move(dir, dist);
+            else if (dist > 1 && currPiece.canMove(dir, dist - 1))
+                currPiece.move(dir, dist - 1);
 
             currPiece = null;
         }
@@ -216,7 +228,7 @@ Piece.prototype.getUnitWidthHeight = function () {
     return {w: _w, h: _h};
 }
 
-Piece.prototype.canMove = function (dir) {
+Piece.prototype.canMove = function (dir, dist) {
     if (this.id != "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE"))
         return false;
 
@@ -233,17 +245,17 @@ Piece.prototype.canMove = function (dir) {
     switch (dir) {
         case "E":
             r_count = dim.h;
-            c_count++;
-            _c = dim.w;
+            c_count = dist + 1;
+            _c = dim.w + dist;
             break;
         case "NE":
             _r = -1;
             _c = 1;
             break;
         case "N":
-            r_count++;
+            r_count = dist + 1;
             c_count = dim.w;
-            _r--;
+            _r -= (dist + 1);
             break;
         case "NW":
             _r = -1;
@@ -251,15 +263,15 @@ Piece.prototype.canMove = function (dir) {
             break;
         case "W":
             r_count = dim.h;
-            c_count++;
-            _c--;
+            c_count = dist + 1;
+            _c -= (dist + 1);
             break;
         case "SW":
             _r = 1;
             _c = -1;
             break;
         case "S":
-            r_count++;
+            r_count = dist + 1;
             c_count = dim.w;
             _r = dim.h;
             break;
@@ -277,19 +289,25 @@ Piece.prototype.canMove = function (dir) {
         return false;
     }
 
+
+    if (r + _r > 4 || r + _r < 0 || c + _c > 3 || c + _c < 0) {
+        return false;
+    }
+
+
     for (var i = r; i < r + r_count; i++) {
         for (var j = c; j < c + c_count; j++) {
-            if (i + _r > 4 || i + _r < 0 || j + _c > 3 || j + _c < 0)
+            if (grid[i + _r][j + _c] == config.get("INVALID")) {
                 return false;
-            else if (grid[i + _r][j + _c] == config.get("INVALID"))
-                return false;
+            }
         }
     }
+
 
     return true;
 }
 
-Piece.prototype.move = function (dir) {
+Piece.prototype.move = function (dir, dist) {
     var dim = this.getUnitWidthHeight();
 
     setValueGrid(this.y, this.x, dim.w, dim.h, config.get("VALID"));
@@ -299,27 +317,27 @@ Piece.prototype.move = function (dir) {
 
     switch (dir) {
         case "E":
-            _x = 1;
+            _x = dist + 1;
             break;
         case "NE":
             _x = 1;
             _y = -1
             break;
         case "N":
-            _y = -1;
+            _y = -(dist + 1);
             break;
         case "NW":
             _x = _y = -1;
             break;
         case "W":
-            _x = -1;
+            _x = -(dist + 1);
             break;
         case "SW":
             _x = -1;
             _y = 1;
             break;
         case "S":
-            _y = 1;
+            _y = dist + 1;
             break;
         case "SE":
             _x = _y = 1;
@@ -340,5 +358,9 @@ Piece.prototype.moveTo = function (x, y) {
             _this.y = Math.floor(this.attr('y') / config.get("CELL_SIZE"));
             var dim = _this.getUnitWidthHeight();
             setValueGrid(_this.y, _this.x, dim.w, dim.h, config.get("INVALID"));
+
+            total_moves++;
+
+            $("#total_moves").text("Total moves: " + total_moves);
         });
 }
