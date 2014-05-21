@@ -299,8 +299,14 @@ Piece.prototype.canMove = function (dir, dist) {
 
     for (var i = r; i < r + r_count; i++) {
         for (var j = c; j < c + c_count; j++) {
-            if (grid[i + _r][j + _c] == config.get("INVALID")) {
-                return false;
+            if (this.id == "big_s") {
+                if (grid[i + _r][j + _c] == config.get("INVALID")) {
+                    return false;
+                }
+            } else {
+                if (grid[i + _r][j + _c] == config.get("INVALID") || grid[i + _r][j + _c] == config.get("WIN")) {
+                    return false;
+                }
             }
         }
     }
@@ -370,6 +376,6 @@ Piece.prototype.moveTo = function (x, y) {
 
             total_moves++;
 
-            $("#total_moves").text("Total moves: " + total_moves);
+            $("#total_moves").text("Total Moves: " + total_moves);
         });
 }
