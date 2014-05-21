@@ -2,19 +2,18 @@ var paper;
 var pieces;
 var grid;
 
-var dir; // 0, 1, 2, 3; 0: East; Counter-Clockwise
+var dir;
 
 var mxBefore, mxAfter, myBefore, myAfter;
 
 var currPiece;
 
 var config = (function () {
-    var CELL_SIZE = 50;
+    var CELL_SIZE = 100;
     var ROWS = 5 + 4;
     var COLS = 4;
 
     var constants = {
-        "ANIM_SPEED": 300,
         "VALID": 0,
         "WIN": 2,
         "INVALID": 1,
@@ -100,14 +99,100 @@ function initPieces() {
             2: new Piece("tall", 3, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "red"),
             3: new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], "red")
         },
-        "wide": new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], "red")
+        "wide": new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], "red"),
+        "empty": {
+            0: new Piece("empty", 4, 1, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "red"),
+            1: new Piece("empty", 4, 2, config.get("CELL_SIZE"), config.get("CELL_SIZE"), "red")
+        }
     };
 }
 
-function getUnitWidthHeight(piece) {
+function setValueGrid(startRow, startCol, w, h, val) {
+    for (var i = startRow; i < startRow + h; i++) {
+        for (var j = startCol; j < startCol + w; j++) {
+            grid[i][j] = val;
+        }
+    }
+}
+
+function printGrid() {
+    for (var i = 0; i < config.get("ROWS"); i++) {
+        var temp = "| ";
+        for (var j = 0; j < config.get("COLS"); j++) {
+            temp += grid[i][j] + " | ";
+        }
+        console.log(temp);
+    }
+}
+
+$(document).mousedown(function (evt) {
+    evt.preventDefault();
+
+    mxBefore = evt.clientX;
+    myBefore = evt.clientY;
+});
+
+$(document).mouseup(function (evt) {
+    mxAfter = evt.clientX;
+    myAfter = evt.clientY;
+
+    var deltaX = mxAfter - mxBefore;
+    var deltaY = myAfter - myBefore;
+    var theta = Math.atan2(deltaX, deltaY) * 180 / Math.PI;
+
+    if (deltaX != 0 || deltaY != 0) {
+        if (theta > 60 && theta < 120)
+            dir = "E";
+        else if (theta > 120 && theta < 150)
+            dir = "NE";
+        else if ((theta > 150 && theta <= 180) || (theta < -150 && theta > -180))
+            dir = "N";
+        else if (theta > -150 && theta < -120)
+            dir = "NW";
+        else if (theta > -120 && theta < -60)
+            dir = "W";
+        else if (theta > -60 && theta < -30)
+            dir = "SW";
+        else if ((theta > -30 && theta <= 0) || (theta >= 0 && theta < 30))
+            dir = "S";
+        else if (theta > 30 && theta < 60)
+            dir = "SE";
+
+        if (currPiece != null) {
+            if (currPiece.canMove(dir))
+                currPiece.move(dir);
+
+            currPiece = null;
+        }
+    }
+});
+
+function Piece(id, x, y, w, h, c) {
+    this.id = id;
+    this.x = x;
+    this.y = y;
+    this.width = w;
+    this.height = h;
+    var _this = this;
+    this.rect = paper.rect((x * config.get("CELL_SIZE")) + config.get("OFFSET"), (y * config.get("CELL_SIZE")) + config.get("OFFSET"),
+            w - config.get("OFFSET") * 2, h - config.get("OFFSET") * 2)
+        .mousedown(function (evt) {
+            currPiece = _this;
+        })
+        .hover(function () {
+            this.animate({stroke: "white"}, 300, "<>");
+        }, function () {
+            this.animate({stroke: "black"}, 300, "<>");
+        })
+        .attr({fill: c, stroke: "black", "stroke-width": 2});
+    this.rect.node.id = id;
+}
+
+
+Piece.prototype.getUnitWidthHeight = function () {
     var _w, _h;
 
-    switch (piece.id) {
+    switch (this.id) {
         case "big_s":
             _w = 2;
             _h = 2;
@@ -129,111 +214,115 @@ function getUnitWidthHeight(piece) {
     return {w: _w, h: _h};
 }
 
-function setValueGrid(startRow, startCol, w, h, val) {
-    for (var i = startRow; i < startRow + h; i++) {
-        for (var j = startCol; j < startCol + w; j++) {
-            grid[i][j] = val;
-        }
-    }
-}
-
-function printGrid() {
-    for (var i = 0; i < config.get("ROWS"); i++) {
-        var temp = "|";
-        for (var j = 0; j < config.get("COLS"); j++) {
-            temp += grid[i][j] + "|";
-        }
-
-        console.log(temp);
-    }
-}
-
-$(document).mousedown(function (evt) {
-    evt.preventDefault();
-
-    mxBefore = evt.clientX;
-    myBefore = evt.clientY;
-});
-
-$(document).mouseup(function (evt) {
-    mxAfter = evt.clientX;
-    myAfter = evt.clientY;
-
-    var deltaX = mxAfter - mxBefore;
-    var deltaY = myAfter - myBefore;
-    var theta = Math.atan2(deltaX, deltaY) * 180 / Math.PI;
-
-    if (deltaX != 0 && deltaY != 0) {
-        if (theta > 45 && theta < 135) {
-            dir = 0;
-        } else if ((theta > 135 && theta <= 180) || (theta < -135 && theta >= -180)) {
-            dir = 1;
-        } else if (theta > -135 && theta < -45) {
-            dir = 2;
-        } else if ((theta > -45 && theta <= 0) || (theta >= 0 && theta <= 45)) {
-            dir = 3;
-        }
-
-        if (currPiece != null) {
-            currPiece.canMove(dir);
-            currPiece.move(dir);
-            currPiece = null;
-        }
-
-        console.log("test");
-    }
-
-    console.log("theta: " + theta + "dir: " + dir);
-
-});
-
-function Piece(id, x, y, w, h, c) {
-    this.id = id;
-    this.x = x;
-    this.y = y;
-    this.width = w;
-    this.height = h;
-    var _this = this;
-    this.rect = paper.rect((x * config.get("CELL_SIZE")) + config.get("OFFSET"), (y * config.get("CELL_SIZE")) + config.get("OFFSET"),
-            w - config.get("OFFSET") * 2, h - config.get("OFFSET") * 2)
-        .mousedown(function (evt) {
-            currPiece = _this;
-        })
-        .hover(function () {
-            this.animate({stroke: "white"}, 500, "<>");
-        }, function () {
-            this.animate({stroke: "black"}, 500, "<>");
-        })
-        .attr({fill: c, stroke: "black", "stroke-width": 2});
-}
-
 Piece.prototype.canMove = function (dir) {
+    var r = this.y;
+    var c = this.x;
 
+    var r_count = 0;
+    var c_count = 0;
+
+    var _r = 0, _c = 0;
+
+    var dim = this.getUnitWidthHeight();
+
+    if (this.id != "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE"))
+        return false;
+
+    switch (dir) {
+        case "E":
+            r_count = dim.h;
+            c_count++;
+            _c = dim.w;
+            break;
+        case "NE":
+            if (grid[r - 1][c + 1] == config.get("VALID")) {
+                if (grid[r - 1][c] == config.get("VALID") || grid[r][c + 1] == config.get("VALID"))
+                    return true;
+            }
+
+            return false;
+            break;
+        case "N":
+            r_count++;
+            c_count = dim.w;
+            _r--;
+            break;
+        case "NW":
+            if (grid[r - 1][c - 1] == config.get("VALID")) {
+                if (grid[r - 1][c] == config.get("VALID") || grid[r][c - 1] == config.get("VALID"))
+                    return true;
+            }
+
+            return false;
+            break;
+        case "W":
+            r_count = dim.h;
+            c_count++;
+            _c--;
+            break;
+        case "SW":
+            if (grid[r + 1][c - 1] == config.get("VALID")) {
+                if (grid[r + 1][c] == config.get("VALID") || grid[r][c - 1] == config.get("VALID"))
+                    return true;
+            }
+
+            return false;
+            break;
+        case "S":
+            r_count++;
+            c_count = dim.w;
+            _r = dim.h;
+            break;
+        case "SE":
+            if (grid[r + 1][c + 1] == config.get("VALID")) {
+                if (grid[r + 1][c] == config.get("VALID") || grid[r][c + 1] == config.get("VALID"))
+                    return true;
+            }
+
+            return false;
+    }
+
+    for (var i = r; i < r + r_count; i++) {
+        for (var j = c; j < c + c_count; j++) {
+            if (i + _r > 4 || i + _r < 0 || j + _c > 3 || j + _c < 0)
+                return false;
+            else if (grid[i + _r][j + _c] == config.get("INVALID"))
+                return false;
+        }
+    }
+
+    return true;
 }
 
 Piece.prototype.move = function (dir) {
-    var dim = getUnitWidthHeight(this);
+    var dim = this.getUnitWidthHeight();
 
-    var canMove = function () {
-
-    }
+    setValueGrid(this.y, this.x, dim.w, dim.h, config.get("VALID"));
 
     switch (dir) {
-        case 0:
-            setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+        case "E":
             this.moveTo(this.x + 1, this.y);
             break;
-        case 1:
-            setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+        case "NE":
+            this.moveTo(this.x + 1, this.y - 1);
+            break;
+        case "N":
             this.moveTo(this.x, this.y - 1);
             break;
-        case 2:
-            setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+        case "NW":
+            this.moveTo(this.x - 1, this.y - 1);
+            break;
+        case "W":
             this.moveTo(this.x - 1, this.y);
             break;
-        case 3:
-            setValueGrid(this.y, this.x, dim.h, dim.w, config.get("VALID"));
+        case "SW":
+            this.moveTo(this.x - 1, this.y + 1);
+            break;
+        case "S":
             this.moveTo(this.x, this.y + 1);
+            break;
+        case "SE":
+            this.moveTo(this.x + 1, this.y + 1);
             break;
     }
 }
@@ -243,11 +332,11 @@ Piece.prototype.moveTo = function (x, y) {
     this.y = y;
     var _this = this;
     this.rect.animate({x: (x * config.get("CELL_SIZE")) + config.get("OFFSET"),
-            y: (y * config.get("CELL_SIZE")) + config.get("OFFSET")}, config.get("ANIM_SPEED"), "ease-in-out",
+            y: (y * config.get("CELL_SIZE")) + config.get("OFFSET")}, 300, "<>",
         function () {
             _this.x = Math.floor(this.attr('x') / config.get("CELL_SIZE"));
             _this.y = Math.floor(this.attr('y') / config.get("CELL_SIZE"));
-            var dim = getUnitWidthHeight(_this);
-            setValueGrid(_this.y, _this.x, dim.h, dim.w, config.get("INVALID"));
+            var dim = _this.getUnitWidthHeight();
+            setValueGrid(_this.y, _this.x, dim.w, dim.h, config.get("INVALID"));
         });
 }
