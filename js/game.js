@@ -15,6 +15,7 @@ var mxBefore, mxAfter, myBefore, myAfter;
 
 var currPiece;
 
+// holds all of the contstants values
 var config = (function () {
     var CELL_SIZE = 100;
     var ROWS = 9;
@@ -42,25 +43,32 @@ var config = (function () {
     }
 })();
 
+
+// automatically gets called when the page loads
 $(function () {
     init();
 });
 
+/*
+ *   Initializes RaphaelJS and saves it to "paper"
+ *   Initializes and resets the grid, which is a 2D array
+ *   Initializes pieces array which holds all of the Piece objects.
+ */
 function init() {
     paper = Raphael("klotski", config.get("WIDTH"), config.get("HEIGHT") + 10);
     paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT"), 5).attr({fill: "#330e04"});
     paper.rect(config.get("CELL_SIZE"), config.get("HEIGHT"), config.get("CELL_SIZE") * 2, 10, 5).attr({fill: "red"});
     grid = new Array(config.get("ROWS"));
+    for (var i = 0; i < grid.length; i++) {
+        grid[i] = new Array(config.get("COLS"));
+    }
     resetGrid();
     initPieces();
 //    testWin();
 }
 
+// resets the grid to the initial game state
 function resetGrid() {
-    for (var i = 0; i < grid.length; i++) {
-        grid[i] = new Array(config.get("COLS"));
-    }
-
     for (var i = 0; i < config.get("ROWS") - 4; i++) {
         for (var j = 0; j < config.get("COLS"); j++) {
             grid[i][j] = config.get("INVALID");
@@ -91,6 +99,7 @@ function resetGrid() {
     grid[8][3] = config.get("INVALID");
 }
 
+// for developing && testing purposes only
 function testWin() {
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].rect.remove();
@@ -110,6 +119,7 @@ function testWin() {
     pieces[9] = new Piece("wide", 1, 1, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c);
 }
 
+// initializes the pieces array by creating and adding all the Piece objects needed
 function initPieces() {
     pieces = new Array(10);
 
@@ -125,6 +135,7 @@ function initPieces() {
     pieces[9] = new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c);
 }
 
+// sets the given value to given space(s) in the grid (from startRow to startRow + h and startCol to startCol + w
 function setValueGrid(startRow, startCol, w, h, val) {
     for (var i = startRow; i < startRow + h; i++) {
         for (var j = startCol; j < startCol + w; j++) {
@@ -133,6 +144,7 @@ function setValueGrid(startRow, startCol, w, h, val) {
     }
 }
 
+// prints the grid to the javascript console -- for testing only
 function printGrid() {
     for (var i = 0; i < config.get("ROWS"); i++) {
         var temp = "| ";
@@ -143,6 +155,7 @@ function printGrid() {
     }
 }
 
+// determines and retuns a direction based on the angle theta that gets passed in
 function getDirection(theta) {
     var dir;
     if (theta > 70 && theta < 110)
@@ -165,6 +178,10 @@ function getDirection(theta) {
     return dir;
 }
 
+/*
+ *  mousedown event handler
+ *  sets the initial mousepressed (x,y) point
+ */
 $(document).mousedown(function (evt) {
     evt.preventDefault();
 
@@ -172,6 +189,14 @@ $(document).mousedown(function (evt) {
     myBefore = evt.clientY;
 });
 
+/*
+ *  mouseup event handler
+ *  sets the (x,y) point where the mouse button was released
+ *  figures out the angle theta
+ *  gets the direction
+ *  determines the distance of travel for the piece
+ *  checks to see if that would be valid move and moves accordingly
+ */
 $(document).mouseup(function (evt) {
     mxAfter = evt.clientX;
     myAfter = evt.clientY;
@@ -208,6 +233,7 @@ $(document).mouseup(function (evt) {
     }
 });
 
+// Piece object
 function Piece(id, x, y, w, h, c) {
     this.id = id;
     this.x = x;
@@ -235,6 +261,7 @@ function Piece(id, x, y, w, h, c) {
     this.rect.node.id = id;
 }
 
+// returns the width and height in unit form for a particular piece
 Piece.prototype.getUnitWidthHeight = function () {
     var _w, _h;
 
@@ -260,6 +287,7 @@ Piece.prototype.getUnitWidthHeight = function () {
     return {w: _w, h: _h};
 }
 
+// determines whether the piece can move a distance dist in the direction dir
 Piece.prototype.canMove = function (dir, dist) {
     if (this.id != "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE"))
         return false;
@@ -311,7 +339,6 @@ Piece.prototype.canMove = function (dir, dist) {
             break;
     }
 
-
     if ((c + _c > 3 || c + _c < 0) || (this.id != "big_s" && (r + _r > 4 || r + _r < 0))) {
         return false;
     }
@@ -343,6 +370,7 @@ Piece.prototype.canMove = function (dir, dist) {
     return true;
 }
 
+// moves the piece to a distance dist in direction dir
 Piece.prototype.move = function (dir, dist) {
     var dim = this.getUnitWidthHeight();
 
@@ -390,6 +418,7 @@ Piece.prototype.move = function (dir, dist) {
     total_moves++;
 }
 
+// returns a random color
 function getRandomColor() {
     var r = Math.random() * 150 + 50;
     var g = Math.random() * 150 + 50;
@@ -398,6 +427,7 @@ function getRandomColor() {
     return "rgb(" + r + "," + g + "," + b + ")";
 }
 
+// moves the piece to a location (x,y) which are in a unit form (i.e x: 0-3, y: 0-4)
 Piece.prototype.moveTo = function (x, y) {
     this.animating = true;
 
@@ -423,12 +453,12 @@ Piece.prototype.moveTo = function (x, y) {
                 winAnimation();
             }
 
-
             $("#total_moves").text("Total Moves: " + total_moves);
         });
 
 }
 
+// handles the animation when the player wins by sliding the big square thru the bottom
 function winAnimation() {
     var overlay = paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(0, 0, 0)", opacity: 0});
     var label = paper.text(200, 250, "WIN\n\nTotal Moves: " + total_moves).attr({"font-size": 40, fill: "white", opacity: 0});
@@ -457,6 +487,7 @@ function winAnimation() {
     });
 }
 
+// resets the game if it can be reset at that point
 function reset() {
     if (canReset == false)
         return;
