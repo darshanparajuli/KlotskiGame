@@ -186,11 +186,10 @@ $(document).mouseup(function (evt) {
         var dir = getDirection(theta);
 
         var dist;
-        if (Math.abs(deltaX) > 150 || Math.abs(deltaY) > 150) {
+        if (Math.abs(deltaX) > 150 || Math.abs(deltaY) > 150)
             dist = 2;
-        } else {
+        else
             dist = 1;
-        }
 
         if (currPiece != null && currPiece.animating == false) {
             if (dist == 2) {
