@@ -52,7 +52,7 @@ function init() {
     grid = new Array(config.get("ROWS"));
     resetGrid();
     initPieces();
-    testGame();
+//    testWin();
 }
 
 function resetGrid() {
@@ -91,7 +91,7 @@ function resetGrid() {
     grid[8][3] = config.get("INVALID");
 }
 
-function testGame() {
+function testWin() {
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].rect.remove();
     }
