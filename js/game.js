@@ -3,6 +3,11 @@ var pieces;
 var grid;
 var win = false;
 
+var big_s_c = "rgb(200, 10, 10)";
+var wide_c = "rgb(0, 50, 200)";
+var small_s_c = "rgb(0, 150, 60)";
+var tall_c = "rgb(20, 120, 120)";
+
 var total_moves = 0;
 
 var mxBefore, mxAfter, myBefore, myAfter;
@@ -45,6 +50,7 @@ function init() {
     paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(60, 60, 60)"});
     initGrid();
     initPieces();
+    //testGame();
 }
 
 function initGrid() {
@@ -62,9 +68,6 @@ function initGrid() {
 
     grid[4][1] = config.get("VALID");
     grid[4][2] = config.get("VALID");
-
-//    grid[0][1] = config.get("VALID");
-//    grid[0][2] = config.get("VALID");
 
 
     grid[5][0] = config.get("INVALID");
@@ -88,12 +91,26 @@ function initGrid() {
     grid[8][3] = config.get("INVALID");
 }
 
-function initPieces() {
-    var big_s_c = "rgb(200, 10, 10)";
-    var wide_c = "rgb(0, 50, 200)";
-    var small_s_c = "rgb(0, 150, 60)";
-    var tall_c = "rgb(20, 120, 120)";
+function testGame() {
+    for (var i = 0; i < pieces.length; i++) {
+        pieces[i].rect.remove();
+    }
 
+    grid[0][1] = config.get("VALID");
+    grid[0][2] = config.get("VALID");
+    pieces[0] = new Piece("big_s", 1, 3, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], big_s_c);
+    pieces[1] = new Piece("small_s", 0, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
+    pieces[2] = new Piece("small_s", 1, 2, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
+    pieces[3] = new Piece("small_s", 2, 2, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
+    pieces[4] = new Piece("small_s", 3, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
+    pieces[5] = new Piece("tall", 0, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
+    pieces[6] = new Piece("tall", 0, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
+    pieces[7] = new Piece("tall", 3, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
+    pieces[8] = new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
+    pieces[9] = new Piece("wide", 1, 1, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c);
+}
+
+function initPieces() {
     pieces = new Array(10);
 
     pieces[0] = new Piece("big_s", 1, 0, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], big_s_c);
@@ -108,16 +125,6 @@ function initPieces() {
     pieces[9] = new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c);
 
 
-//    pieces[0] = new Piece("big_s", 1, 3, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], big_s_c);
-//    pieces[1] = new Piece("small_s", 0, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
-//    pieces[2] = new Piece("small_s", 1, 2, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
-//    pieces[3] = new Piece("small_s", 2, 2, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
-//    pieces[4] = new Piece("small_s", 3, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
-//    pieces[5] = new Piece("tall", 0, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
-//    pieces[6] = new Piece("tall", 0, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
-//    pieces[7] = new Piece("tall", 3, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
-//    pieces[8] = new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
-//    pieces[9] = new Piece("wide", 1, 1, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c);
 }
 
 function setValueGrid(startRow, startCol, w, h, val) {
@@ -229,7 +236,6 @@ function Piece(id, x, y, w, h, c) {
     this.rect.node.id = id;
 }
 
-
 Piece.prototype.getUnitWidthHeight = function () {
     var _w, _h;
 
@@ -255,8 +261,6 @@ Piece.prototype.getUnitWidthHeight = function () {
     return {w: _w, h: _h};
 }
 
-
-// fix
 Piece.prototype.canMove = function (dir, dist) {
     if (this.id != "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE"))
         return false;
@@ -270,8 +274,6 @@ Piece.prototype.canMove = function (dir, dist) {
     var _r = 0, _c = 0;
 
     var dim = this.getUnitWidthHeight();
-
-//    console.log("dir: " + dir + ", dist: " + dist);
 
     switch (dir) {
         case "E":
@@ -323,21 +325,15 @@ Piece.prototype.canMove = function (dir, dist) {
         }
         return false;
     }
-//    console.log("r: " + r);
-
 
     for (var i = r; i < r + tempr; i++) {
         for (var j = c; j < c + tempc; j++) {
             if (this.id == "big_s") {
                 if (grid[i + _r][j + _c] != config.get("VALID") && grid[i + _r][j + _c] != config.get("WIN")) {
-//                    console.log("test1");
                     return false;
                 }
             } else {
                 if (grid[i + _r][j + _c] != config.get("VALID")) {
-//                    console.log("test2");
-//                    console.log("var: " + (i + _r));
-//                    console.log("var2: " + i + ", " + j);
                     return false;
                 }
             }
