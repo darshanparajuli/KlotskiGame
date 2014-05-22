@@ -15,39 +15,52 @@
         }
 
         #klotski {
-            display: inline-block;
             border: 5px solid black;
             border-radius: 10px;
             background-color: black;
         }
 
-        #klotski-container {
+        #main {
             text-align: center;
         }
+
+        #main-container {
+            display: inline-block;
+            text-align: center;
+            border-radius: 10px;
+            background-color: #1b1b1b;
+        }
+
+        p, #total_moves {
+            color: white;
+        }
+
+
     </style>
 
     <body>
 
+        <div id="main">
+            <div id="main-container">
+                <div id="klotski-container">
+                    <div id="klotski">
+                    </div>
 
-        <div id="klotski-container">
-            <div id="klotski">
+                    <br/>
 
+                    <div id="total_moves">Total Moves: 0</div>
+                    <input type="button" value="RESET" name="resetBtn" onclick="reset()"/>
+
+
+                    <p>
+                        Created by: <br/>
+                        Darshan Parajuli <br/>
+                        Sheng Xi <br/>
+                        Sammy Sidhu
+                    </p>
+                </div>
             </div>
-
-            <br/>
-            <br/>
-
-            <div id="total_moves" style="color: white;">Total Moves: 0</div>
-            <input type="button" value="RESET" name="resetBtn" onclick="reset()"/>
-
-
-            <p>
-                Darshan Parajuli <br/>
-                Sheng Xi <br/>
-                Sammy Sidhu
-            </p>
         </div>
-
 
     </body>
 </html>
