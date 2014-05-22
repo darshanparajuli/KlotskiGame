@@ -41,7 +41,7 @@ $(function () {
 
 function init() {
     paper = Raphael("klotski", config.get("WIDTH"), config.get("HEIGHT"));
-    paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(50, 50, 50)"});
+    paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(60, 60, 60)"});
     initGrid();
     initPieces();
 }
@@ -299,6 +299,10 @@ Piece.prototype.canMove = function (dir, dist) {
     }
 
 
+    if (r + _r > 4 || r + _r < 0 || c + _c > 3 || c + _c < 0) {
+        return false;
+    }
+
     if (this.id == "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE")) {
         if (grid[r + _r][c + _c] == config.get("VALID")) {
             if (grid[r + _r][c] == config.get("VALID") || grid[r][c + _c] == config.get("VALID")) {
@@ -309,9 +313,6 @@ Piece.prototype.canMove = function (dir, dist) {
     }
 //    console.log("r: " + r);
 
-    if (r + _r > 4 || r + _r < 0 || c + _c > 3 || c + _c < 0) {
-        return false;
-    }
 
     for (var i = r; i < r + tempr; i++) {
         for (var j = c; j < c + tempc; j++) {
@@ -390,7 +391,7 @@ Piece.prototype.moveTo = function (x, y) {
             _this.y = Math.floor(this.attr('y') / config.get("CELL_SIZE"));
             var dim = _this.getUnitWidthHeight();
             setValueGrid(_this.y, _this.x, dim.w, dim.h, config.get("INVALID"));
-            _this.rect.animate({fill: currColor}, 300, "<>", function () {
+            _this.rect.animate({fill: currColor}, 100, "<>", function () {
                 _this.animating = false;
             });
 
