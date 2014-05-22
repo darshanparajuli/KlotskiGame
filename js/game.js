@@ -467,7 +467,7 @@ function reset() {
     }
 
     var t = 0;
-    var interval = 25;
+    var interval = 30;
 
     var temp = function () {
         if (++t * interval >= 500) {
