@@ -47,8 +47,9 @@ $(function () {
 });
 
 function init() {
-    paper = Raphael("klotski", config.get("WIDTH"), config.get("HEIGHT"));
+    paper = Raphael("klotski", config.get("WIDTH"), config.get("HEIGHT") + 10);
     paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(60, 60, 60)"});
+    paper.rect(config.get("CELL_SIZE"), config.get("HEIGHT"), config.get("CELL_SIZE") * 2, 10, 5).attr({fill: "red"});
     grid = new Array(config.get("ROWS"));
     resetGrid();
     initPieces();
@@ -220,7 +221,7 @@ function Piece(id, x, y, w, h, c) {
     this.animating = false;
     var _this = this;
     this.rect = paper.rect((x * config.get("CELL_SIZE")) + config.get("OFFSET"), (y * config.get("CELL_SIZE")) + config.get("OFFSET"),
-            w - config.get("OFFSET") * 2, h - config.get("OFFSET") * 2)
+            w - config.get("OFFSET") * 2, h - config.get("OFFSET") * 2, 5)
         .mousedown(function (evt) {
             currPiece = _this;
         })
@@ -467,10 +468,10 @@ function reset() {
 
 
     var t = 0;
-    var interval = 20;
+    var interval = 25;
 
     var temp = function () {
-        if (++t * interval >= 1000) {
+        if (++t * interval >= 500) {
             for (var i = 0; i < pieces.length; i++) {
                 pieces[i].rect.attr({fill: pieces[i].init_c});
             }
