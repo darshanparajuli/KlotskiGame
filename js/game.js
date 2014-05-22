@@ -503,7 +503,7 @@ function reset() {
     var temp = function () {
         if (++t * interval >= 500) {
             for (var i = 0; i < pieces.length; i++) {
-                pieces[i].rect.attr({fill: pieces[i].init_c});
+                pieces[i].rect.animate({fill: pieces[i].init_c}, 1000, "<>");
             }
             return;
         }
