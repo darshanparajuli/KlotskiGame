@@ -69,7 +69,6 @@ function resetGrid() {
     grid[4][1] = config.get("VALID");
     grid[4][2] = config.get("VALID");
 
-
     grid[5][0] = config.get("INVALID");
     grid[5][1] = config.get("WIN");
     grid[5][2] = config.get("WIN");
@@ -469,6 +468,6 @@ function reset() {
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].moveTo(pieces[i].x, pieces[i].y);
     }
-    
+
     total_moves = 0;
 }
