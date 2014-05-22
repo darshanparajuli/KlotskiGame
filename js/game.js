@@ -213,6 +213,7 @@ function Piece(id, x, y, w, h, c) {
     this.y = y;
     this.init_x = x;
     this.init_y = y;
+    this.init_c = c;
     this.width = w;
     this.height = h;
     this.animating;
@@ -229,7 +230,7 @@ function Piece(id, x, y, w, h, c) {
             this.animate({stroke: "black"}, 300, "<>");
         })
         .attr({fill: c, stroke: "black", "stroke-width": 2});
-    
+
     this.rect.node.id = id;
 }
 
@@ -389,9 +390,9 @@ Piece.prototype.move = function (dir, dist) {
 }
 
 function getRandomColor() {
-    var r = Math.random() * 100 + 80;
-    var g = Math.random() * 100 + 80;
-    var b = Math.random() * 100 + 80;
+    var r = Math.random() * 150 + 50;
+    var g = Math.random() * 150 + 50;
+    var b = Math.random() * 150 + 50;
 
     return "rgb(" + r + "," + g + "," + b + ")";
 }
@@ -464,7 +465,28 @@ function reset() {
         pieces[i].y = pieces[i].init_y;
     }
 
+
+    var t = 0;
+    var interval = 20;
+
+    var temp = function () {
+        if (++t * interval >= 1000) {
+            for (var i = 0; i < pieces.length; i++) {
+                pieces[i].rect.attr({fill: pieces[i].init_c});
+            }
+            return;
+        }
+        for (var i = 0; i < pieces.length; i++) {
+            pieces[i].rect.attr({fill: getRandomColor()});
+        }
+
+        setTimeout(temp, interval);
+    }
+
+    setTimeout(temp, interval);
+
     resetGrid();
+
 
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].moveTo(pieces[i].x, pieces[i].y);
