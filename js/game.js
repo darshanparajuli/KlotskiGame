@@ -229,6 +229,7 @@ function Piece(id, x, y, w, h, c) {
             this.animate({stroke: "black"}, 300, "<>");
         })
         .attr({fill: c, stroke: "black", "stroke-width": 2});
+    
     this.rect.node.id = id;
 }
 
