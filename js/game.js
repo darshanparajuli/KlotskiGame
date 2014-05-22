@@ -95,6 +95,7 @@ function initPieces() {
     var tall_c = "rgb(20, 120, 120)";
 
     pieces = new Array(10);
+
     pieces[0] = new Piece("big_s", 1, 0, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], big_s_c);
     pieces[1] = new Piece("small_s", 0, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
     pieces[2] = new Piece("small_s", 1, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
@@ -106,7 +107,7 @@ function initPieces() {
     pieces[8] = new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
     pieces[9] = new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c);
 
-//    pieces = new Array(10);
+
 //    pieces[0] = new Piece("big_s", 1, 3, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], big_s_c);
 //    pieces[1] = new Piece("small_s", 0, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
 //    pieces[2] = new Piece("small_s", 1, 2, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
@@ -390,6 +391,8 @@ Piece.prototype.move = function (dir, dist) {
     } else {
         this.moveTo(this.x + _x, this.y + _y);
     }
+
+    total_moves++;
 }
 
 function getRandomColor() {
@@ -415,8 +418,6 @@ Piece.prototype.moveTo = function (x, y) {
         tempColor = getRandomColor();
     }
 
-    total_moves++;
-
     this.rect.animate({x: (x * config.get("CELL_SIZE")) + config.get("OFFSET"),
             y: (y * config.get("CELL_SIZE")) + config.get("OFFSET"), fill: tempColor}, 300, "<>",
         function () {
@@ -424,10 +425,39 @@ Piece.prototype.moveTo = function (x, y) {
             _this.y = Math.floor(this.attr('y') / config.get("CELL_SIZE"));
             var dim = _this.getUnitWidthHeight();
             setValueGrid(_this.y, _this.x, dim.w, dim.h, config.get("INVALID"));
+
             _this.rect.animate({fill: currColor}, 100, "<>", function () {
                 _this.animating = false;
 
                 if (win == true) {
+                    win = false;
+
+                    winAnimation();
+                }
+
+
+            });
+            $("#total_moves").text("Total Moves: " + total_moves);
+        });
+
+}
+
+function winAnimation() {
+    var overlay = paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(0, 0, 0)", opacity: 0});
+    overlay.animate({opacity: 0.5}, 2000, "<>");
+    var label = paper.text(200, 250, "YOU WON\n\nTotal Moves: " + total_moves).attr({"font-size": 40, fill: getRandomColor(), opacity: 0});
+    label.animate({opacity: 1}, 2000, "<>", function () {
+
+        var count = 0;
+
+        var temp = function () {
+            if (++count >= 50) {
+                label.animate({opacity: 0}, 2000, "<>", function () {
+                    label.remove();
+                });
+
+                overlay.animate({opacity: 0}, 2000, "<>", function () {
+                    overlay.remove();
                     for (var i = 0; i < pieces.length; i++) {
                         pieces[i].x = pieces[i].init_x;
                         pieces[i].y = pieces[i].init_y;
@@ -437,15 +467,15 @@ Piece.prototype.moveTo = function (x, y) {
                     for (var i = 0; i < pieces.length; i++) {
                         pieces[i].moveTo(pieces[i].x, pieces[i].y);
                     }
-
-                    win = false;
-
                     total_moves = 0;
+                });
 
-                    paper.text(100, 100, "YOU WON").attr({color: "red"});
-                }
+                return;
+            }
+            label.attr({fill: getRandomColor()});
+            setTimeout(temp, 50);
+        }
 
-                $("#total_moves").text("Total Moves: " + total_moves);
-            });
-        });
+        setTimeout(temp, 50);
+    });
 }
