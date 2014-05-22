@@ -48,7 +48,7 @@ $(function () {
 
 function init() {
     paper = Raphael("klotski", config.get("WIDTH"), config.get("HEIGHT") + 10);
-    paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(60, 60, 60)"});
+    paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT"), 5).attr({fill: "#330e04"});
     paper.rect(config.get("CELL_SIZE"), config.get("HEIGHT"), config.get("CELL_SIZE") * 2, 10, 5).attr({fill: "red"});
     grid = new Array(config.get("ROWS"));
     resetGrid();
