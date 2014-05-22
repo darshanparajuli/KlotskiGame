@@ -48,14 +48,13 @@ $(function () {
 function init() {
     paper = Raphael("klotski", config.get("WIDTH"), config.get("HEIGHT"));
     paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(60, 60, 60)"});
-    initGrid();
+    grid = new Array(config.get("ROWS"));
+    resetGrid();
     initPieces();
     //testGame();
 }
 
-function initGrid() {
-    grid = new Array(config.get("ROWS"));
-
+function resetGrid() {
     for (var i = 0; i < grid.length; i++) {
         grid[i] = new Array(config.get("COLS"));
     }
@@ -467,7 +466,7 @@ function reset() {
         pieces[i].y = pieces[i].init_y;
     }
 
-    initGrid();
+    resetGrid();
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].moveTo(pieces[i].x, pieces[i].y);
     }
