@@ -414,29 +414,23 @@ Piece.prototype.moveTo = function (x, y) {
 
     var tempColor = "white";
 
-    if (win == true) {
-        tempColor = getRandomColor();
-    }
-
     this.rect.animate({x: (x * config.get("CELL_SIZE")) + config.get("OFFSET"),
-            y: (y * config.get("CELL_SIZE")) + config.get("OFFSET"), fill: tempColor}, 300, "<>",
+            y: (y * config.get("CELL_SIZE")) + config.get("OFFSET")}, 300, "<>",
         function () {
             _this.x = Math.floor(this.attr('x') / config.get("CELL_SIZE"));
             _this.y = Math.floor(this.attr('y') / config.get("CELL_SIZE"));
             var dim = _this.getUnitWidthHeight();
             setValueGrid(_this.y, _this.x, dim.w, dim.h, config.get("INVALID"));
 
-            _this.rect.animate({fill: currColor}, 100, "<>", function () {
-                _this.animating = false;
+            _this.animating = false;
 
-                if (win == true) {
-                    win = false;
+            if (win == true) {
+                win = false;
 
-                    winAnimation();
-                }
+                winAnimation();
+            }
 
 
-            });
             $("#total_moves").text("Total Moves: " + total_moves);
         });
 
