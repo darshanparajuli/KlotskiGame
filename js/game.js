@@ -452,16 +452,8 @@ function winAnimation() {
 
                 overlay.animate({opacity: 0}, 2000, "<>", function () {
                     overlay.remove();
-                    for (var i = 0; i < pieces.length; i++) {
-                        pieces[i].x = pieces[i].init_x;
-                        pieces[i].y = pieces[i].init_y;
-                    }
 
-                    initGrid();
-                    for (var i = 0; i < pieces.length; i++) {
-                        pieces[i].moveTo(pieces[i].x, pieces[i].y);
-                    }
-                    total_moves = 0;
+                    reset();
                 });
 
                 return;
@@ -472,4 +464,17 @@ function winAnimation() {
 
         setTimeout(temp, 50);
     });
+}
+
+function reset() {
+    for (var i = 0; i < pieces.length; i++) {
+        pieces[i].x = pieces[i].init_x;
+        pieces[i].y = pieces[i].init_y;
+    }
+
+    initGrid();
+    for (var i = 0; i < pieces.length; i++) {
+        pieces[i].moveTo(pieces[i].x, pieces[i].y);
+    }
+    total_moves = 0;
 }
