@@ -466,7 +466,6 @@ function reset() {
         pieces[i].y = pieces[i].init_y;
     }
 
-
     var t = 0;
     var interval = 25;
 
@@ -487,7 +486,6 @@ function reset() {
     setTimeout(temp, interval);
 
     resetGrid();
-
 
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].moveTo(pieces[i].x, pieces[i].y);
