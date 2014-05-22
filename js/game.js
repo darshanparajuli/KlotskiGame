@@ -2,6 +2,7 @@ var paper;
 var pieces;
 var grid;
 var win = false;
+var canReset = true;
 
 var big_s_c = "rgb(200, 10, 10)";
 var wide_c = "rgb(0, 50, 200)";
@@ -51,7 +52,7 @@ function init() {
     grid = new Array(config.get("ROWS"));
     resetGrid();
     initPieces();
-    //testGame();
+    testGame();
 }
 
 function resetGrid() {
@@ -404,10 +405,6 @@ Piece.prototype.moveTo = function (x, y) {
     this.y = y;
     var _this = this;
 
-    var currColor = this.rect.attr("fill");
-
-    var tempColor = "white";
-
     this.rect.animate({x: (x * config.get("CELL_SIZE")) + config.get("OFFSET"),
             y: (y * config.get("CELL_SIZE")) + config.get("OFFSET")}, 300, "<>",
         function () {
@@ -421,6 +418,8 @@ Piece.prototype.moveTo = function (x, y) {
             if (win == true) {
                 win = false;
 
+                canReset = false;
+
                 winAnimation();
             }
 
@@ -432,35 +431,36 @@ Piece.prototype.moveTo = function (x, y) {
 
 function winAnimation() {
     var overlay = paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(0, 0, 0)", opacity: 0});
-    overlay.animate({opacity: 0.5}, 2000, "<>");
-    var label = paper.text(200, 250, "YOU WON\n\nTotal Moves: " + total_moves).attr({"font-size": 40, fill: getRandomColor(), opacity: 0});
-    label.animate({opacity: 1}, 2000, "<>", function () {
+    var label = paper.text(200, 250, "WIN\n\nTotal Moves: " + total_moves).attr({"font-size": 40, fill: "white", opacity: 0});
+    var clickToPlay = paper.text(200, 400, "Click to play again!").attr({"font-size": 16, fill: "gray", opacity: 0});
 
-        var count = 0;
+    overlay.animate({opacity: 0.75}, 2000, "<>");
+    label.animate({opacity: 1}, 3000, "<>", function () {
+        clickToPlay.animate({opacity: 1}, 1000, "<>", function () {
+            overlay.click(function () {
+                clickToPlay.animate({opacity: 0}, 1000, "<>", function () {
+                    clickToPlay.remove();
+                });
 
-        var temp = function () {
-            if (++count >= 50) {
                 label.animate({opacity: 0}, 2000, "<>", function () {
                     label.remove();
                 });
 
                 overlay.animate({opacity: 0}, 2000, "<>", function () {
                     overlay.remove();
-
-                    reset();
                 });
 
-                return;
-            }
-            label.attr({fill: getRandomColor()});
-            setTimeout(temp, 50);
-        }
-
-        setTimeout(temp, 50);
+                canReset = true;
+                reset();
+            });
+        });
     });
 }
 
 function reset() {
+    if (canReset == false)
+        return;
+
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].x = pieces[i].init_x;
         pieces[i].y = pieces[i].init_y;

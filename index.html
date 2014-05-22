@@ -10,25 +10,44 @@
     </head>
 
     <style>
+        body {
+            background-color: #434343;
+        }
+
         #klotski {
             display: inline-block;
             border: 5px solid black;
             border-radius: 10px;
             background-color: black;
         }
+
+        #klotski-container {
+            text-align: center;
+        }
     </style>
 
     <body>
 
-        <div id="klotski">
 
+        <div id="klotski-container">
+            <div id="klotski">
+
+            </div>
+
+            <br/>
+            <br/>
+
+            <div id="total_moves" style="color: white;">Total Moves: 0</div>
+            <input type="button" value="RESET" name="resetBtn" onclick="reset()"/>
+
+
+            <p>
+                Darshan Parajuli <br/>
+                Sheng Xi <br/>
+                Sammy Sidhu
+            </p>
         </div>
 
-        <br/>
-        <br/>
-        <br/>
 
-        <div id="total_moves">Total Moves: 0</div>
-        <input type="button" value="RESET" name="resetBtn" onclick="reset()"/>
     </body>
 </html>
