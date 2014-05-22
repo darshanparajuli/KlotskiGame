@@ -17,7 +17,7 @@ var currPiece;
 
 var config = (function () {
     var CELL_SIZE = 100;
-    var ROWS = 5 + 4;
+    var ROWS = 9;
     var COLS = 4;
 
     var constants = {
