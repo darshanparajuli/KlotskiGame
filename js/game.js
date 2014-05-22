@@ -145,21 +145,21 @@ function printGrid() {
 
 function getDirection(theta) {
     var dir;
-    if (theta > 60 && theta < 120)
+    if (theta > 70 && theta < 110)
         dir = "E";
-    else if (theta > 120 && theta < 150)
+    else if (theta > 110 && theta < 160)
         dir = "NE";
-    else if ((theta > 150 && theta <= 180) || (theta < -150 && theta > -180))
+    else if ((theta > 160 && theta <= 180) || (theta < -160 && theta > -180))
         dir = "N";
-    else if (theta > -150 && theta < -120)
+    else if (theta > -160 && theta < -110)
         dir = "NW";
-    else if (theta > -120 && theta < -60)
+    else if (theta > -110 && theta < -70)
         dir = "W";
-    else if (theta > -60 && theta < -30)
+    else if (theta > -70 && theta < -20)
         dir = "SW";
-    else if ((theta > -30 && theta <= 0) || (theta >= 0 && theta < 30))
+    else if ((theta > -20 && theta <= 0) || (theta >= 0 && theta < 20))
         dir = "S";
-    else if (theta > 30 && theta < 60)
+    else if (theta > 20 && theta < 70)
         dir = "SE";
 
     return dir;
