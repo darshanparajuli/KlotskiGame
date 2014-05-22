@@ -2,8 +2,6 @@ var paper;
 var pieces;
 var grid;
 
-var dir;
-
 var total_moves = 0;
 
 var mxBefore, mxAfter, myBefore, myAfter;
@@ -129,6 +127,28 @@ function printGrid() {
     }
 }
 
+function getDirection(theta) {
+    var dir;
+    if (theta > 60 && theta < 120)
+        dir = "E";
+    else if (theta > 120 && theta < 150)
+        dir = "NE";
+    else if ((theta > 150 && theta <= 180) || (theta < -150 && theta > -180))
+        dir = "N";
+    else if (theta > -150 && theta < -120)
+        dir = "NW";
+    else if (theta > -120 && theta < -60)
+        dir = "W";
+    else if (theta > -60 && theta < -30)
+        dir = "SW";
+    else if ((theta > -30 && theta <= 0) || (theta >= 0 && theta < 30))
+        dir = "S";
+    else if (theta > 30 && theta < 60)
+        dir = "SE";
+
+    return dir;
+}
+
 $(document).mousedown(function (evt) {
     evt.preventDefault();
 
@@ -145,36 +165,28 @@ $(document).mouseup(function (evt) {
     var theta = Math.atan2(deltaX, deltaY) * 180 / Math.PI;
 
     if (deltaX != 0 || deltaY != 0) {
-        if (theta > 60 && theta < 120)
-            dir = "E";
-        else if (theta > 120 && theta < 150)
-            dir = "NE";
-        else if ((theta > 150 && theta <= 180) || (theta < -150 && theta > -180))
-            dir = "N";
-        else if (theta > -150 && theta < -120)
-            dir = "NW";
-        else if (theta > -120 && theta < -60)
-            dir = "W";
-        else if (theta > -60 && theta < -30)
-            dir = "SW";
-        else if ((theta > -30 && theta <= 0) || (theta >= 0 && theta < 30))
-            dir = "S";
-        else if (theta > 30 && theta < 60)
-            dir = "SE";
+        var dir = getDirection(theta);
 
         var dist;
-
         if (Math.abs(deltaX) > 150 || Math.abs(deltaY) > 150) {
-            dist = 1;
+            dist = 2;
         } else {
-            dist = 0;
+            dist = 1;
         }
 
         if (currPiece != null && currPiece.animating == false) {
-            if (currPiece.canMove(dir, dist))
-                currPiece.move(dir, dist);
-            else if (dist > 0 && currPiece.canMove(dir, dist - 1))
-                currPiece.move(dir, dist - 1);
+            if (dist == 2) {
+                if (currPiece.canMove(dir, dist - 1)) {
+                    if (currPiece.canMove(dir, dist))
+                        currPiece.move(dir, dist);
+                    else
+                        currPiece.move(dir, dist - 1);
+
+                }
+            } else {
+                if (currPiece.canMove(dir, dist))
+                    currPiece.move(dir, dist);
+            }
 
             currPiece = null;
         }
@@ -230,6 +242,8 @@ Piece.prototype.getUnitWidthHeight = function () {
     return {w: _w, h: _h};
 }
 
+
+// fix
 Piece.prototype.canMove = function (dir, dist) {
     if (this.id != "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE"))
         return false;
@@ -237,45 +251,46 @@ Piece.prototype.canMove = function (dir, dist) {
     var r = this.y;
     var c = this.x;
 
-    var r_count = 0;
-    var c_count = 0;
+    var tempr = 1;
+    var tempc = 1;
 
     var _r = 0, _c = 0;
 
     var dim = this.getUnitWidthHeight();
 
+    console.log("dir: " + dir + ", dist: " + dist);
+
+
     switch (dir) {
         case "E":
-            r_count = dim.h;
-            c_count = dist + 1;
-            _c = dim.w + dist;
+            _c = dist;
+            tempr = dim.h;
+            c += (dim.w - 1);
             break;
         case "NE":
             _r = -1;
             _c = 1;
             break;
         case "N":
-            r_count = dist + 1;
-            c_count = dim.w;
-            _r -= (dist + 1);
+            _r = -dist;
+            tempc = dim.h;
             break;
         case "NW":
             _r = -1;
             _c = -1;
             break;
         case "W":
-            r_count = dim.h;
-            c_count = dist + 1;
-            _c -= (dist + 1);
+            _c = -dist;
+            tempr = dim.h;
             break;
         case "SW":
             _r = 1;
             _c = -1;
             break;
         case "S":
-            r_count = dist + 1;
-            c_count = dim.w;
-            _r = dim.h;
+            _r = dist;
+            r += (dim.h - 1);
+            tempc = dim.w;
             break;
         case "SE":
             _r = 1;
@@ -291,18 +306,25 @@ Piece.prototype.canMove = function (dir, dist) {
         return false;
     }
 
+
     if (r + _r > 4 || r + _r < 0 || c + _c > 3 || c + _c < 0) {
         return false;
     }
 
-    for (var i = r; i < r + r_count; i++) {
-        for (var j = c; j < c + c_count; j++) {
+    console.log("r: " + r);
+
+    for (var i = r; i < r + tempr; i++) {
+        for (var j = c; j < c + tempc; j++) {
             if (this.id == "big_s") {
-                if (grid[i + _r][j + _c] == config.get("INVALID")) {
+                if (grid[i + _r][j + _c] != config.get("VALID") && grid[i + _r][j + _c] != config.get("WIN")) {
+                    console.log("test1");
                     return false;
                 }
             } else {
-                if (grid[i + _r][j + _c] == config.get("INVALID") || grid[i + _r][j + _c] == config.get("WIN")) {
+                if (grid[i + _r][j + _c] != config.get("VALID")) {
+                    console.log("test2");
+                    console.log("var: " + (i + _r));
+                    console.log("var2: " + i + ", " + j);
                     return false;
                 }
             }
@@ -323,27 +345,27 @@ Piece.prototype.move = function (dir, dist) {
 
     switch (dir) {
         case "E":
-            _x = dist + 1;
+            _x = dist;
             break;
         case "NE":
             _x = 1;
             _y = -1
             break;
         case "N":
-            _y = -(dist + 1);
+            _y = -dist;
             break;
         case "NW":
             _x = _y = -1;
             break;
         case "W":
-            _x = -(dist + 1);
+            _x = -dist;
             break;
         case "SW":
             _x = -1;
             _y = 1;
             break;
         case "S":
-            _y = dist + 1;
+            _y = dist;
             break;
         case "SE":
             _x = _y = 1;
