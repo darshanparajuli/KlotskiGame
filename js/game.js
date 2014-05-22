@@ -465,8 +465,10 @@ function reset() {
     }
 
     resetGrid();
+
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].moveTo(pieces[i].x, pieces[i].y);
     }
+    
     total_moves = 0;
 }
