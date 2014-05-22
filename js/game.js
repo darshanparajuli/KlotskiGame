@@ -1,6 +1,7 @@
 var paper;
 var pieces;
 var grid;
+var win = false;
 
 var total_moves = 0;
 
@@ -62,6 +63,7 @@ function initGrid() {
     grid[4][1] = config.get("VALID");
     grid[4][2] = config.get("VALID");
 
+
     grid[5][0] = config.get("INVALID");
     grid[5][1] = config.get("WIN");
     grid[5][2] = config.get("WIN");
@@ -81,8 +83,6 @@ function initGrid() {
     grid[8][1] = config.get("WIN");
     grid[8][2] = config.get("WIN");
     grid[8][3] = config.get("INVALID");
-
-    dir = 0;
 }
 
 function initPieces() {
@@ -91,22 +91,34 @@ function initPieces() {
     var small_s_c = "rgb(0, 150, 60)";
     var tall_c = "rgb(20, 120, 120)";
 
-    pieces = {
-        "big_s": new Piece("big_s", 1, 0, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], big_s_c),
-        "small_s": {
-            0: new Piece("small_s", 0, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c),
-            1: new Piece("small_s", 1, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c),
-            2: new Piece("small_s", 2, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c),
-            3: new Piece("small_s", 3, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c)
-        },
-        "tall": {
-            0: new Piece("tall", 0, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c),
-            1: new Piece("tall", 0, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c),
-            2: new Piece("tall", 3, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c),
-            3: new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c)
-        },
-        "wide": new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c)
-    };
+//    pieces = {
+//        "big_s": new Piece("big_s", 1, 0, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], big_s_c),
+//        "small_s": {
+//            0: new Piece("small_s", 0, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c),
+//            1: new Piece("small_s", 1, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c),
+//            2: new Piece("small_s", 2, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c),
+//            3: new Piece("small_s", 3, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c)
+//        },
+//        "tall": {
+//            0: new Piece("tall", 0, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c),
+//            1: new Piece("tall", 0, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c),
+//            2: new Piece("tall", 3, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c),
+//            3: new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c)
+//        },
+//        "wide": new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c)
+//    };
+
+    pieces = new Array(10);
+    pieces[0] = new Piece("big_s", 1, 0, config.get("BIG_SQUARE")["WIDTH"], config.get("BIG_SQUARE")["HEIGHT"], big_s_c);
+    pieces[1] = new Piece("small_s", 0, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
+    pieces[2] = new Piece("small_s", 1, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
+    pieces[3] = new Piece("small_s", 2, 3, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
+    pieces[4] = new Piece("small_s", 3, 4, config.get("CELL_SIZE"), config.get("CELL_SIZE"), small_s_c);
+    pieces[5] = new Piece("tall", 0, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
+    pieces[6] = new Piece("tall", 0, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
+    pieces[7] = new Piece("tall", 3, 0, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
+    pieces[8] = new Piece("tall", 3, 2, config.get("TALL_RECT")["WIDTH"], config.get("TALL_RECT")["HEIGHT"], tall_c);
+    pieces[9] = new Piece("wide", 1, 2, config.get("WIDE_RECT")["WIDTH"], config.get("WIDE_RECT")["HEIGHT"], wide_c);
 }
 
 function setValueGrid(startRow, startCol, w, h, val) {
@@ -197,6 +209,8 @@ function Piece(id, x, y, w, h, c) {
     this.id = id;
     this.x = x;
     this.y = y;
+    this.init_x = x;
+    this.init_y = y;
     this.width = w;
     this.height = h;
     this.animating;
@@ -260,7 +274,6 @@ Piece.prototype.canMove = function (dir, dist) {
 
 //    console.log("dir: " + dir + ", dist: " + dist);
 
-
     switch (dir) {
         case "E":
             _c = dist;
@@ -299,7 +312,7 @@ Piece.prototype.canMove = function (dir, dist) {
     }
 
 
-    if (r + _r > 4 || r + _r < 0 || c + _c > 3 || c + _c < 0) {
+    if ((c + _c > 3 || c + _c < 0) || (this.id != "big_s" && (r + _r > 4 || r + _r < 0))) {
         return false;
     }
 
@@ -373,19 +386,39 @@ Piece.prototype.move = function (dir, dist) {
             break;
     }
 
-    this.moveTo(this.x + _x, this.y + _y);
+    if (win == false && this.id == "big_s" && dir == "S" && this.x == 1 && this.y == 3) {
+        win = true;
+        this.moveTo(this.x, 5);
+    } else {
+        this.moveTo(this.x + _x, this.y + _y);
+    }
+}
+
+function getRandomColor() {
+    var r = Math.random() * 100 + 80;
+    var g = Math.random() * 100 + 80;
+    var b = Math.random() * 100 + 80;
+
+    return "rgb(" + r + "," + g + "," + b + ")";
 }
 
 Piece.prototype.moveTo = function (x, y) {
     this.animating = true;
+
     this.x = x;
     this.y = y;
     var _this = this;
 
     var currColor = this.rect.attr("fill");
 
+    var tempColor = "white";
+
+    if (win == true) {
+        tempColor = getRandomColor();
+    }
+
     this.rect.animate({x: (x * config.get("CELL_SIZE")) + config.get("OFFSET"),
-            y: (y * config.get("CELL_SIZE")) + config.get("OFFSET"), fill: "yellow"}, 300, "<>",
+            y: (y * config.get("CELL_SIZE")) + config.get("OFFSET"), fill: tempColor}, 300, "<>",
         function () {
             _this.x = Math.floor(this.attr('x') / config.get("CELL_SIZE"));
             _this.y = Math.floor(this.attr('y') / config.get("CELL_SIZE"));
@@ -393,6 +426,19 @@ Piece.prototype.moveTo = function (x, y) {
             setValueGrid(_this.y, _this.x, dim.w, dim.h, config.get("INVALID"));
             _this.rect.animate({fill: currColor}, 100, "<>", function () {
                 _this.animating = false;
+                if (win == true) {
+                    for (var i = 0; i < pieces.length; i++) {
+                        pieces[i].x = pieces[i].init_x;
+                        pieces[i].y = pieces[i].init_y;
+                    }
+
+                    initGrid();
+                    for (var i = 0; i < pieces.length; i++) {
+                        pieces[i].moveTo(pieces[i].x, pieces[i].y);
+                    }
+
+                    win = false;
+                }
             });
 
             total_moves++;
