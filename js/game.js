@@ -1,4 +1,4 @@
-var gamePanel;
+var paper;
 var pieces;
 var grid;
 var win = false;
@@ -47,9 +47,9 @@ $(function () {
 });
 
 function init() {
-    gamePanel = Raphael("klotski", config.get("WIDTH"), config.get("HEIGHT") + 10);
-    gamePanel.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT"), 5).attr({fill: "#330e04"});
-    gamePanel.rect(config.get("CELL_SIZE"), config.get("HEIGHT"), config.get("CELL_SIZE") * 2, 10, 5).attr({fill: "red"});
+    paper = Raphael("klotski", config.get("WIDTH"), config.get("HEIGHT") + 10);
+    paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT"), 5).attr({fill: "#330e04"});
+    paper.rect(config.get("CELL_SIZE"), config.get("HEIGHT"), config.get("CELL_SIZE") * 2, 10, 5).attr({fill: "red"});
     grid = new Array(config.get("ROWS"));
     resetGrid();
     initPieces();
@@ -220,7 +220,7 @@ function Piece(id, x, y, w, h, c) {
     this.animating;
     this.animating = false;
     var _this = this;
-    this.rect = gamePanel.rect((x * config.get("CELL_SIZE")) + config.get("OFFSET"), (y * config.get("CELL_SIZE")) + config.get("OFFSET"),
+    this.rect = paper.rect((x * config.get("CELL_SIZE")) + config.get("OFFSET"), (y * config.get("CELL_SIZE")) + config.get("OFFSET"),
             w - config.get("OFFSET") * 2, h - config.get("OFFSET") * 2, 5)
         .mousedown(function (evt) {
             currPiece = _this;
@@ -430,9 +430,9 @@ Piece.prototype.moveTo = function (x, y) {
 }
 
 function winAnimation() {
-    var overlay = gamePanel.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(0, 0, 0)", opacity: 0});
-    var label = gamePanel.text(200, 250, "WIN\n\nTotal Moves: " + total_moves).attr({"font-size": 40, fill: "white", opacity: 0});
-    var clickToPlay = gamePanel.text(200, 400, "Click to play again!").attr({"font-size": 16, fill: "gray", opacity: 0});
+    var overlay = paper.rect(0, 0, config.get("WIDTH"), config.get("HEIGHT")).attr({fill: "rgb(0, 0, 0)", opacity: 0});
+    var label = paper.text(200, 250, "WIN\n\nTotal Moves: " + total_moves).attr({"font-size": 40, fill: "white", opacity: 0});
+    var clickToPlay = paper.text(200, 400, "Click to play again!").attr({"font-size": 16, fill: "gray", opacity: 0});
 
     overlay.animate({opacity: 0.75}, 2000, "<>");
     label.animate({opacity: 1}, 3000, "<>", function () {
