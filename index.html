@@ -36,6 +36,7 @@
 
         #total_moves {
             color: white;
+            padding-bottom: .5em;
         }
 
         p {
@@ -43,8 +44,14 @@
         }
 
         #left {
+            padding-top: 1em;
             padding-left: 4em;
             float: left;
+        }
+
+        #right {
+            float: right;
+            padding-right: 4em;
         }
 
         #info {
@@ -122,8 +129,6 @@
                     <div id="info">
                         <div id="left">
                             <div id="total_moves">Total Moves: 0</div>
-
-                            <br/>
 
                             <input class="resetBtn" type="button" value="RESET" name="resetBtn"
                                    onclick="reset()"/>
