@@ -258,7 +258,7 @@ Piece.prototype.canMove = function (dir, dist) {
 
     var dim = this.getUnitWidthHeight();
 
-    console.log("dir: " + dir + ", dist: " + dist);
+//    console.log("dir: " + dir + ", dist: " + dist);
 
 
     switch (dir) {
@@ -273,7 +273,7 @@ Piece.prototype.canMove = function (dir, dist) {
             break;
         case "N":
             _r = -dist;
-            tempc = dim.h;
+            tempc = dim.w;
             break;
         case "NW":
             _r = -1;
@@ -298,33 +298,33 @@ Piece.prototype.canMove = function (dir, dist) {
             break;
     }
 
+
     if (this.id == "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE")) {
         if (grid[r + _r][c + _c] == config.get("VALID")) {
-            if (grid[r + _r][c] == config.get("VALID") || grid[r][c + _c] == config.get("VALID"))
+            if (grid[r + _r][c] == config.get("VALID") || grid[r][c + _c] == config.get("VALID")) {
                 return true;
+            }
         }
         return false;
     }
-
+//    console.log("r: " + r);
 
     if (r + _r > 4 || r + _r < 0 || c + _c > 3 || c + _c < 0) {
         return false;
     }
 
-    console.log("r: " + r);
-
     for (var i = r; i < r + tempr; i++) {
         for (var j = c; j < c + tempc; j++) {
             if (this.id == "big_s") {
                 if (grid[i + _r][j + _c] != config.get("VALID") && grid[i + _r][j + _c] != config.get("WIN")) {
-                    console.log("test1");
+//                    console.log("test1");
                     return false;
                 }
             } else {
                 if (grid[i + _r][j + _c] != config.get("VALID")) {
-                    console.log("test2");
-                    console.log("var: " + (i + _r));
-                    console.log("var2: " + i + ", " + j);
+//                    console.log("test2");
+//                    console.log("var: " + (i + _r));
+//                    console.log("var2: " + i + ", " + j);
                     return false;
                 }
             }
