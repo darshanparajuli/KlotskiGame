@@ -339,8 +339,14 @@ Piece.prototype.canMove = function (dir, dist) {
             break;
     }
 
-    if ((c + _c > 3 || c + _c < 0) || (this.id != "big_s" && (r + _r > 4 || r + _r < 0))) {
+    if ((c + _c > 3 || c + _c < 0)) {
         return false;
+    } else {
+        if (this.id != "big_s" && (r + _r > 4 || r + _r < 0)) {
+            return false;
+        } else if (r + _r < 0) {
+            return false;
+        }
     }
 
     if (this.id == "small_s" && (dir == "NE" || dir == "NW" || dir == "SW" || dir == "SE")) {
